@@ -6,12 +6,13 @@ from app.utils.consts import Constants
 from app.service.remote.api.accu_weather_api import WeatherAPI
 from weather_model.weather_model import WeatherEvaluator
 
+#понимаю что на git не надо комитить .env но вы бы их ни как не увидели и не запустили проект
+
 load_dotenv()
 
 weather_api = WeatherAPI(os.getenv('WEATHER_API_KEY'))
 
 app = Flask(__name__)
-
 
 #иннициализация веб приложени
 @app.route('/')
