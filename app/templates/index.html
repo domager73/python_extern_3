@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оценка Погоды</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function toggleInputMethod() {
+            const method = document.querySelector('input[name="input_method"]:checked').value;
+            if (method === 'coordinates') {
+                document.getElementById('coordinates_input').style.display = 'block';
+                document.getElementById('city_input').style.display = 'none';
+            } else {
+                document.getElementById('coordinates_input').style.display = 'none';
+                document.getElementById('city_input').style.display = 'block';
+            }
+        }
+    </script>
+</head>
+<body onload="toggleInputMethod()">
+<div class="container">
+    <h1>Оценка Погоды</h1>
+    <form action="/evaluate-weather" method="POST">
+        <div style="margin-bottom: 20px;">
+            <label>
+                <input type="radio" name="input_method" value="city"
+                       {% if input_method== 'city' %}checked{% endif %}
+                onchange="toggleInputMethod()"> По Городам
+            </label>
+            <label>
+                <input type="radio" name="input_method" value="coordinates"
+                       {% if input_method== 'coordinates' %}checked{% endif %}
+                onchange="toggleInputMethod()"> По Координатам
+            </label>
+        </div>
+
+
+        <!-- Ввод для Города -->
+        <div id="city_input">
+            <div class="form-group">
+                <label for="departure_city">Город Отправления:</label>
+                <input type="text" id="departure_city" name="departure_city" value="{{ departure_city or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="destination_city">Город Назначения:</label>
+                <input type="text" id="destination_city" name="destination_city" value="{{ destination_city or '' }}">
+            </div>
+        </div>
+
+        <!-- Ввод для Координат -->
+        <div id="coordinates_input" style="display: none;">
+            <div class="form-group">
+                <label for="departure_lat">Широта Отправления:</label>
+                <input type="text" id="departure_lat" name="departure_lat" value="{{ departure_lat or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="departure_lon">Долгота Отправления:</label>
+                <input type="text" id="departure_lon" name="departure_lon" value="{{ departure_lon or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="destination_lat">Широта Назначения:</label>
+                <input type="text" id="destination_lat" name="destination_lat" value="{{ destination_lat or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="destination_lon">Долгота Назначения:</label>
+                <input type="text" id="destination_lon" name="destination_lon" value="{{ destination_lon or '' }}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Оценить Погоду</button>
+    </form>
+
+    {% if departure_weather and destination_weather %}
+    <div class="result">
+        <h2>Результаты Оценки Погоды</h2>
+        <h3>Город/Координаты Отправления: {{ departure_city or (departure_lat + ', ' + departure_lon) }}</h3>
+        <p>{{ departure_weather }}</p>
+
+        <h3>Город/Координаты Назначения: {{ destination_city or (destination_lat + ', ' + destination_lon) }}</h3>
+        <p>{{ destination_weather }}</p>
+    </div>
+    {% elif weather %}
+    <div class="result">
+        <p>{{ weather }}</p>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
