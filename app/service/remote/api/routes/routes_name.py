@@ -1,5 +1,7 @@
 # Роутинг Api
 
 class RoutesName:
-    base_url = "https://api.openweathermap.org/data/2.5"
-    get_weather = "/weather"
+    geocoding_api = "https://geocoding-api.open-meteo.com/v1"
+    forecast_api = "https://api.open-meteo.com/v1"
+    search_coordinates = "/search"
+    forecast = "/forecast"

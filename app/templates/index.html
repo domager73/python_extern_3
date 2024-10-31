@@ -16,6 +16,21 @@
                 document.getElementById('city_input').style.display = 'block';
             }
         }
+
+        function addWaypoint(inputType) {
+            const waypointsContainer = document.getElementById(inputType + '_waypoints');
+            const waypointIndex = waypointsContainer.children.length + 1;
+            const newWaypoint = document.createElement('div');
+            newWaypoint.classList.add('form-group');
+            newWaypoint.innerHTML = inputType === 'city'
+                ? `<label for="waypoint_city_${waypointIndex}">Промежуточный город ${waypointIndex}:</label>
+                   <input type="text" name="waypoint_city_${waypointIndex}" placeholder="Введите город">`
+                : `<label for="waypoint_lat_${waypointIndex}">Широта Промежуточной точки ${waypointIndex}:</label>
+                   <input type="text" name="waypoint_lat_${waypointIndex}" placeholder="Введите широту">
+                   <label for="waypoint_lon_${waypointIndex}">Долгота Промежуточной точки ${waypointIndex}:</label>
+                   <input type="text" name="waypoint_lon_${waypointIndex}" placeholder="Введите долготу">`;
+            waypointsContainer.appendChild(newWaypoint);
+        }
     </script>
 </head>
 <body onload="toggleInputMethod()">
@@ -35,13 +50,15 @@
             </label>
         </div>
 
-
         <!-- Ввод для Города -->
         <div id="city_input">
             <div class="form-group">
                 <label for="departure_city">Город Отправления:</label>
                 <input type="text" id="departure_city" name="departure_city" value="{{ departure_city or '' }}">
             </div>
+            <div id="city_waypoints"></div>
+            <button type="button" onclick="addWaypoint('city')" style="margin: 10px;">Добавить промежуточный город
+            </button>
             <div class="form-group">
                 <label for="destination_city">Город Назначения:</label>
                 <input type="text" id="destination_city" name="destination_city" value="{{ destination_city or '' }}">
@@ -58,6 +75,10 @@
                 <label for="departure_lon">Долгота Отправления:</label>
                 <input type="text" id="departure_lon" name="departure_lon" value="{{ departure_lon or '' }}">
             </div>
+            <div id="coordinates_waypoints"></div>
+            <button type="button" onclick="addWaypoint('coordinates')" style="margin: 10px;">Добавить промежуточную
+                точку
+            </button>
             <div class="form-group">
                 <label for="destination_lat">Широта Назначения:</label>
                 <input type="text" id="destination_lat" name="destination_lat" value="{{ destination_lat or '' }}">
@@ -68,23 +89,41 @@
             </div>
         </div>
 
-        <button type="submit" class="btn">Оценить Погоду</button>
+        <div class="button-container">
+            <button type="submit" class="btn-dashboard" style="margin-top: 20px;">Посчитать значения</button>
+        </div>
+
+        {% if departure_weather and destination_weather %}
+        <div class="result">
+            <h2>Результаты Оценки Погоды</h2>
+            <h3>Город/Координаты Отправления: {{ departure_city or (departure_lat + ', ' + departure_lon) }}</h3>
+            <p>{{ departure_weather }}</p>
+
+            <h3>Город/Координаты Назначения: {{ destination_city or (destination_lat + ', ' + destination_lon) }}</h3>
+            <p>{{ destination_weather }}</p>
+
+            <!-- Отображение погоды для промежуточных точек -->
+            {% if waypoints %}
+            <h3>Промежуточные точки:</h3>
+            <ul>
+                {% for waypoint in waypoints %}
+                <li>{{ waypoint }}: {{ waypoint_evaluations[waypoint] }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+        </div>
+        {% elif weather %}
+        <div class="result">
+            <p>{{ weather }}</p>
+        </div>
+        {% endif %}
     </form>
-
-    {% if departure_weather and destination_weather %}
-    <div class="result">
-        <h2>Результаты Оценки Погоды</h2>
-        <h3>Город/Координаты Отправления: {{ departure_city or (departure_lat + ', ' + departure_lon) }}</h3>
-        <p>{{ departure_weather }}</p>
-
-        <h3>Город/Координаты Назначения: {{ destination_city or (destination_lat + ', ' + destination_lon) }}</h3>
-        <p>{{ destination_weather }}</p>
-    </div>
-    {% elif weather %}
-    <div class="result">
-        <p>{{ weather }}</p>
-    </div>
-    {% endif %}
+</div>
+<div class="button-container">
+    <button class="btn-dashboard" onclick="window.location.href='/dashboard'">Точный анализ погоды</button>
+    <button class="btn-dashboard" onclick="window.location.href='/dashboard2'">Посмотреть путь на карте</button>
 </div>
 </body>
+
 </html>
