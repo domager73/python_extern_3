@@ -56,3 +56,24 @@ input[type="text"] {
     background-color: #ecf0f1;
     border-radius: 5px;
 }
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-dashboard {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-dashboard:hover {
+    background-color: #2980b9;
+}
